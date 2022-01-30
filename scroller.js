@@ -52,7 +52,7 @@ function create() {
 
 function preload ()
 {
-	this.load.image('sky', 'assets/space3.png');
+	this.load.image('sky', 'assets/pxSky.png');
 	this.load.image('logo', 'assets/phaser1.png');
 	this.load.image('red', 'assets/red.png');
 }
