@@ -1,6 +1,6 @@
 var config = {
 	type: Phaser.AUTO,
-	width: 800,
+	width: 960,
 	height: 600,
 	physics: {
 		default: 'arcade',
@@ -11,7 +11,8 @@ var config = {
 	},
 	scene: {
 		preload: preload,
-		create: create
+		create: create,
+		autoCenter: true
 	}
 };
 
@@ -52,14 +53,14 @@ function create() {
 
 function preload ()
 {
-	this.load.image('sky', 'assets/space3.png');
+	this.load.image('sky', 'assets/pxSky.png');
 	this.load.image('logo', 'assets/phaser1.png');
 	this.load.image('red', 'assets/red.png');
 }
 
 function create ()
 {
-	this.add.image(400, 300, 'sky');
+	this.add.image(480, 300, 'sky');
 
 	var particles = this.add.particles('red');
 
