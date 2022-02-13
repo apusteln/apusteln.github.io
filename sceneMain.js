@@ -40,7 +40,7 @@ class SceneMain extends Phaser.Scene {
 		this.player;
 		this.cursors;
 		this.score = 0;
-		this.lives = 10;
+		this.lives = 3;
 		this.playerTween;
 		
 		this.background = this.add.image(480, 300, 'sky');
@@ -155,7 +155,7 @@ class SceneMain extends Phaser.Scene {
 			}
 		}
 		
-		if (this.lives < 1)
+		if (this.lives < 0)
 		{
 			this.scene.start("GameOverScene");
 			return;
@@ -181,7 +181,7 @@ class SceneMain extends Phaser.Scene {
 	{
 		if (this.cursors.up.isDown && this.player.body.touching.down && !this.player.ignoreImputs)
 		{
-			this.player.setVelocityY(-350);
+			this.player.setVelocityY(-370);
 			this.sound.play("jump_sound");
 		}
 	}
@@ -190,7 +190,7 @@ class SceneMain extends Phaser.Scene {
 	{
 		if (this.cursors.up.isDown && this.player.body.touching.down && !this.player.ignoreImputs)
 		{
-			this.player.setVelocityY(-350);
+			this.player.setVelocityY(-370);
 			this.sound.play("jump_sound");
 		}
 	}
@@ -198,7 +198,10 @@ class SceneMain extends Phaser.Scene {
 	decreaseLives ()
 	{
 		this.lives = this.lives - 1;
-		this.livesText.setText('Lives: ' + this.lives);
+		if (this.lives >= 0) //zeby nie wyskakiwalo -1 przed smiercia
+		{	
+			this.livesText.setText('Lives: ' + this.lives);
+		}
 	}
 	
 	winGame ()
@@ -274,7 +277,7 @@ class SceneMain extends Phaser.Scene {
 			player_ob.setVelocityY(-150);
 			if (this.cursors.up.isDown && player_ob.body.touching.down && !this.player.ignoreImputs)
 			{
-				player_ob.setVelocityY(-350);
+				player_ob.setVelocityY(-370);
 			}
 			enemy_ob.body.allowGravity = false;
 			enemy_ob.body.checkCollision.none = true;
@@ -338,12 +341,25 @@ class SceneMain extends Phaser.Scene {
 		this.platforms.create(750, 220, 'platform_200');
 		this.platforms.create(1000, 350, 'platform_400');
 		
+		this.spikes.create(1000, this.platforms.children.entries[3].body.top, 'spikes').setScale(0.3).setOrigin(0.5, 1).refreshBody();
+		
+		this.platforms.create(1500, 280, 'platform_400');
+		
+		this.coins.create(1400, 220, 'coins')
+		this.coins.create(1600, 220, 'coins')
+		
+		this.enemies.create(1500, 200, "enemy");
+		
+		this.platforms.create(1300, 500, 'platform_200');
+		
+		this.enemies.create(1300, 400, "enemy");
+		
 		this.coins.create(600, 300, 'coins')
 		this.coins.create(700, 180, 'coins')
 		this.coins.create(800, 180, 'coins')
 		
 		//this.spikes.create(200, 200, 'spikes').setScale(0.3).setOrigin(0.5, 1).refreshBody();
-		this.spikes.create(250, 520, 'spikes').setScale(0.3).setOrigin(0.5, 0).refreshBody();
+		this.spikes.create(200, 520, 'spikes').setScale(0.3).setOrigin(0.5, 0).refreshBody();
 		
 		this.enemies.create(600, 300, "enemy");
 		this.enemies.create(800, 150, "enemy");
@@ -351,6 +367,15 @@ class SceneMain extends Phaser.Scene {
 		for (var i=0; i<6; i++)
 		{
 			this.grounds.create(i*128, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		}
+		
+		var new_ground_start = this.grounds.children.entries[this.grounds.children.entries.length-1].body.right;
+		
+		var hole_in_the_floor = 500;
+		
+		for (var i=0; i<6; i++)
+		{
+			this.grounds.create(new_ground_start + hole_in_the_floor + i*128, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
 		}
 		
 		
