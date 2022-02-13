@@ -24,8 +24,22 @@ class WinScene extends Phaser.Scene {
 			  fontFamily: 'Courier',
 			}
 			).setOrigin(0.5)
+			
+		if (jsonFileForLevel !== null)
+		{
+			this.add.text(width*0.5, height*0.75, "Press 'L' to load a file from json",
+			{ fontSize: '40px',
+			  fill: '#fff',
+			  backgroundColor: '#000',
+			  fontFamily: 'Courier',
+			}
+			).setOrigin(0.5)
+		}
 		
+		this.pauseButton = this.input.keyboard.addKey('P');
 		this.restartButton = this.input.keyboard.addKey('R');
+		this.loadButton = this.input.keyboard.addKey('L');
+		this.downloadButton = this.input.keyboard.addKey('D');
 	}
 	
 	update ()
@@ -34,6 +48,13 @@ class WinScene extends Phaser.Scene {
 		{
 			this.scene.start("SceneMain");
 			this.scene.stop();
+			return;
+		}
+		if (this.loadButton.isDown && jsonFileForLevel !== null)
+		{
+			this.scene.stop("SceneMain");
+			this.scene.stop();
+			this.scene.start("SceneMain", {createMode: "load_level"});
 			return;
 		}
 	}

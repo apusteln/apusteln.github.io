@@ -7,8 +7,7 @@ window.onload = function() {
 		physics: {
 			default: 'arcade',
 			arcade: {
-				gravity: { y: 500 },
-				debug: true
+				gravity: { y: 500 }
 			}
 		},
 		scene: [SceneMain, GameOverScene, PauseScene, WinScene],

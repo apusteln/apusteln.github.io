@@ -1,4 +1,5 @@
 
+
 class SceneMain extends Phaser.Scene {
 
 
@@ -30,7 +31,7 @@ class SceneMain extends Phaser.Scene {
 		this.load.audio('enemy_ouch', 'assets/enemy_ouch.mp3');
 	}
 
-	create ()
+	create(data = {createMode: string})
 	{
 		this.worldSizeX = 2000;
 		this.worldSizeY = 600;
@@ -52,7 +53,20 @@ class SceneMain extends Phaser.Scene {
 		this.spikes = this.physics.add.staticGroup();
 		this.enemies = this.physics.add.group();
 		
-		this.createFirstLevel();
+		console.log(data.createMode);
+		
+		if (typeof data.createMode === 'undefined' || data.createMode == "first_level")
+		{
+			this.createFirstLevel();
+		}
+		else if (data.createMode == "random_level")
+		{
+			console.log("IMPLEMENT");
+		}
+		else if (data.createMode == "load_level" && jsonFileForLevel !== null)
+		{
+			this.loadLevelFromJson(jsonFileForLevel);
+		}
 		
 		for (var i=0; i<this.enemies.children.entries.length; i++)
 		{
@@ -364,21 +378,87 @@ class SceneMain extends Phaser.Scene {
 		this.enemies.create(600, 300, "enemy");
 		this.enemies.create(800, 150, "enemy");
 		
-		for (var i=0; i<6; i++)
+		for (var i=0; i<5; i++)
 		{
 			this.grounds.create(i*128, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
 		}
 		
 		var new_ground_start = this.grounds.children.entries[this.grounds.children.entries.length-1].body.right;
 		
+		this.grounds.create(new_ground_start, 600, 'ground_stop').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		
+		new_ground_start = this.grounds.children.entries[this.grounds.children.entries.length-1].body.right;
+		
 		var hole_in_the_floor = 500;
+		
+		this.grounds.create(new_ground_start + hole_in_the_floor, 600, 'ground_start').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		
+		new_ground_start = this.grounds.children.entries[this.grounds.children.entries.length-1].body.right;
 		
 		for (var i=0; i<6; i++)
 		{
-			this.grounds.create(new_ground_start + hole_in_the_floor + i*128, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+			this.grounds.create(new_ground_start + i*128, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		}
+	}
+	
+	createSecondLevel ()
+	{
+		this.platforms.create(950, 550, 'platform_400');
+		this.spikes.create(800, this.platforms.children.entries[this.platforms.children.entries.length-1].body.top, 'spikes').setScale(0.3).setOrigin(0.5, 1).refreshBody()
+		this.spikes.create(950, this.platforms.children.entries[this.platforms.children.entries.length-1].body.top, 'spikes').setScale(0.3).setOrigin(0.5, 1).refreshBody()
+		this.spikes.create(1100, this.platforms.children.entries[this.platforms.children.entries.length-1].body.top, 'spikes').setScale(0.3).setOrigin(0.5, 1).refreshBody()
+		this.platforms.create(630, 590, 'platform_100');
+		
+		
+		this.platforms.create(300, 510, 'platform_100');
+		this.spikes.create(300, this.platforms.children.entries[this.platforms.children.entries.length-1].body.top, 'spikes').setScale(0.3).setOrigin(0.5, 1).refreshBody()
+		this.platforms.create(80, 390, 'platform_100');
+		this.platforms.create(300, 290, 'platform_100');
+		this.platforms.create(490, 250, 'platform_100');
+		
+		//this.enemies.create(300, 430, "enemy");
+		this.enemies.create(80, 320, "enemy");
+		this.enemies.create(300, 220, "enemy");
+		this.enemies.create(490, 200, "enemy");
+		
+		
+		this.platforms.create(900, 200, 'platform_400');
+		this.coins.create(750, 150, 'coins')
+		this.coins.create(850, 150, 'coins')
+		this.coins.create(950, 150, 'coins')
+		this.coins.create(1050, 150, 'coins')
+		
+		this.platforms.create(1500, 280, 'platform_400');
+		
+		this.enemies.create(1500, 200, "enemy");
+		
+		this.platforms.create(1300, 500, 'platform_200');
+		
+		this.enemies.create(1300, 400, "enemy");
+		
+		this.enemies.create(800, 150, "enemy");
+		
+		for (var i=0; i<3; i++)
+		{
+			this.grounds.create(i*128, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
 		}
 		
+		var new_ground_start = this.grounds.children.entries[this.grounds.children.entries.length-1].body.right;
 		
+		this.grounds.create(new_ground_start, 600, 'ground_stop').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		
+		new_ground_start = this.grounds.children.entries[this.grounds.children.entries.length-1].body.right;
+		
+		var hole_in_the_floor = 950;
+		
+		this.grounds.create(new_ground_start + hole_in_the_floor, 600, 'ground_start').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		
+		new_ground_start = this.grounds.children.entries[this.grounds.children.entries.length-1].body.right;
+		
+		for (var i=0; i<6; i++)
+		{
+			this.grounds.create(new_ground_start + i*128, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		}
 	}
 	
 	setUpAnimations ()
@@ -435,6 +515,96 @@ class SceneMain extends Phaser.Scene {
 			frameRate: 5,
 			repeat: -1
 		});
+	}
+	
+	saveLevelInJson ()
+	{
+		var obj = {};
+		
+		obj.coins = {};
+		obj.coins.arr = [];
+		for (var i=0; i<this.coins.children.entries.length; i++)
+		{
+			obj.coins.arr.push({x: this.coins.children.entries[i].x,
+			                    y: this.coins.children.entries[i].y,
+			                    originX: this.coins.children.entries[i].originX,
+			                    originY: this.coins.children.entries[i].originY})
+		}
+		
+		obj.spikes = {};
+		obj.spikes.arr = [];
+		for (var i=0; i<this.spikes.children.entries.length; i++)
+		{
+			obj.spikes.arr.push({x: this.spikes.children.entries[i].x,
+			                     y: this.spikes.children.entries[i].y,
+			                     originX: this.spikes.children.entries[i].originX,
+			                     originY: this.spikes.children.entries[i].originY})
+		}
+		
+		obj.platforms = {};
+		obj.platforms.arr = [];
+		for (var i=0; i<this.platforms.children.entries.length; i++)
+		{
+			obj.platforms.arr.push({x: this.platforms.children.entries[i].x,
+			                        y: this.platforms.children.entries[i].y,
+			                        originX: this.platforms.children.entries[i].originX,
+			                        originY: this.platforms.children.entries[i].originY,
+									pic: this.platforms.children.entries[i].texture.key})
+		}
+		
+		obj.enemies = {};
+		obj.enemies.arr = [];
+		for (var i=0; i<this.enemies.children.entries.length; i++)
+		{
+			obj.enemies.arr.push({x: this.enemies.children.entries[i].x,
+			                      y: this.enemies.children.entries[i].y,
+								  originX: this.enemies.children.entries[i].originX,
+		                          originY: this.enemies.children.entries[i].originY})
+		}
+		
+		obj.grounds = {};
+		obj.grounds.arr = [];
+		for (var i=0; i<this.grounds.children.entries.length; i++)
+		{
+			obj.grounds.arr.push({x: this.grounds.children.entries[i].x,
+			                      y: this.grounds.children.entries[i].y,
+								  originX: this.grounds.children.entries[i].originX,
+								  originY: this.grounds.children.entries[i].originY,
+								  pic: this.grounds.children.entries[i].texture.key})
+		}
+		
+		var levelJSON = JSON.stringify(obj);
+		
+		var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(levelJSON);
+		var dlAnchorElem = document.getElementById('downloadAnchorElem');
+		dlAnchorElem.setAttribute("href", dataStr);
+		dlAnchorElem.setAttribute("download", "level.json");
+		dlAnchorElem.click();
+	}
+	
+	loadLevelFromJson (saidJson)
+	{
+		for (var i=0; i<saidJson.coins.arr.length; i++)
+		{
+			this.coins.create(saidJson.coins.arr[i].x, saidJson.coins.arr[i].y, 'coins').setOrigin(saidJson.coins.arr[i].originX, saidJson.coins.arr[i].originY).refreshBody();
+		}
+		for (var i=0; i<saidJson.spikes.arr.length; i++)
+		{
+			this.spikes.create(saidJson.spikes.arr[i].x, saidJson.spikes.arr[i].y, 'spikes').setOrigin(saidJson.spikes.arr[i].originX, saidJson.spikes.arr[i].originY).setScale(0.3).refreshBody();
+		}
+		for (var i=0; i<saidJson.platforms.arr.length; i++)
+		{
+			this.platforms.create(saidJson.platforms.arr[i].x, saidJson.platforms.arr[i].y, saidJson.platforms.arr[i].pic).setOrigin(saidJson.platforms.arr[i].originX, saidJson.platforms.arr[i].originY).refreshBody();
+		}
+		for (var i=0; i<saidJson.enemies.arr.length; i++)
+		{
+			this.enemies.create(saidJson.enemies.arr[i].x, saidJson.enemies.arr[i].y, 'enemy').setOrigin(saidJson.enemies.arr[i].originX, saidJson.enemies.arr[i].originY).refreshBody();
+		}
+		for (var i=0; i<saidJson.grounds.arr.length; i++)
+		{
+			this.grounds.create(saidJson.grounds.arr[i].x, saidJson.grounds.arr[i].y, saidJson.grounds.arr[i].pic).setScale(0.5).setOrigin(saidJson.grounds.arr[i].originX, saidJson.grounds.arr[i].originY).refreshBody();
+		}
+		
 	}
 
 }

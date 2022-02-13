@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>Jario</title>
+    <meta charset="utf-8">
+    <title>Jario</title>
 </head>
 <body>
 
-	<div id="Game"></div>
-	<script src="phaser-facebook-instant-games.min.js"></script> 
-    <script src="scroller.js"></script>
-    <script src="sceneMain.js"></script>
-    <script src="gameOverScene.js"></script>
-    <script src="pauseScene.js"></script>
-    <script src="winScene.js"></script>
+    <div id="Game"></div>
 
+
+    <form id="upload">
+        <label for="file">Upload level in json file: </label>
+        <input type="file" id="file" accept=".json">
+        <button>Upload</button>
+    </form>
+    <script type='text/javascript' src="fileUploader.js"></script>
+    <div id="errMessage"></div>
+    <a id="downloadAnchorElem" style="display:none"></a>
+
+    <script type='text/javascript' src="phaser-facebook-instant-games.min.js"></script> 
+    <script type='text/javascript' src="scroller.js"></script>
+    <script type='text/javascript' src="sceneMain.js"></script>
+    <script type='text/javascript' src="gameOverScene.js"></script>
+    <script type='text/javascript' src="pauseScene.js"></script>
+    <script type='text/javascript' src="winScene.js"></script>
 </body>
 </html>
