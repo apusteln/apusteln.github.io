@@ -26,9 +26,9 @@ class GameOverScene extends Phaser.Scene {
 			}
 			).setOrigin(0.5)
 		
-		if (jsonFileForLevel !== null)
+		if (     true     )
 		{
-			this.add.text(width*0.5, height*0.75, "Press 'L' to load a file from json",
+			this.add.text(width*0.5, height*0.75, "Press 'L' to load a level from json",
 			{ fontSize: '40px',
 			  fill: '#fff',
 			  backgroundColor: '#000',
@@ -51,7 +51,7 @@ class GameOverScene extends Phaser.Scene {
 			this.scene.start("SceneMain", {createMode: "first_level"});
 			return;
 		}
-		if (this.loadButton.isDown && jsonFileForLevel !== null)
+		if (this.loadButton.isDown                )
 		{
 			this.scene.stop("SceneMain");
 			this.scene.stop();

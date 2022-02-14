@@ -63,9 +63,10 @@ class SceneMain extends Phaser.Scene {
 		{
 			console.log("IMPLEMENT");
 		}
-		else if (data.createMode == "load_level" && jsonFileForLevel !== null)
+		else if (data.createMode == "load_level"             )
 		{
-			this.loadLevelFromJson(jsonFileForLevel);
+			console.log(document.getElementById("json_level"))
+			this.loadLevelFromJson(JSON.parse(document.getElementById("json_level").contentWindow.document.body.childNodes[0].innerHTML));
 		}
 		
 		for (var i=0; i<this.enemies.children.entries.length; i++)
