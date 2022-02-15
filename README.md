@@ -7,7 +7,7 @@ Additionally controls: 'P' to pause and 'R' to restart the game after losing or 
 
 In the pause menu you can press 'O' to generate a random level and play it.
 
-You can save the map you're playing on in pause menu. There is "sample_level.json" on the repo, from which the game loads a level under 'L' in the pause menu, unfortunately the loading action does not yet workon the github site and has been disabled.
+You can save the map you're playing on in pause menu. There is "sample_level.json" on the repo, from which the game loads a level under 'L' in the pause menu, unfortunately the loading action does not yet workon the github site and has been disabled. The functionality has been enabled on 'local_webserver' branch, where you can run the game on your own webserver and check it out.
 
 The game can be played at this link: https://apusteln.github.io/
 
