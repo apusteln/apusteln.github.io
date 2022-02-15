@@ -19,7 +19,7 @@ class PauseScene extends Phaser.Scene {
 			}
 			).setOrigin(0.5)
 
-		this.add.text(width*0.5, height*0.65, "Press 'P' to unpause",
+		this.add.text(width*0.5, height*0.55, "Press 'P' to unpause",
 			{ fontSize: '40px',
 			  fill: '#fff',
 			  backgroundColor: '#000',
@@ -27,7 +27,7 @@ class PauseScene extends Phaser.Scene {
 			}
 			).setOrigin(0.5)
 
-		this.add.text(width*0.5, height*0.75, "Press 'R' to restart",
+		this.add.text(width*0.5, height*0.65, "Press 'R' to restart",
 			{ fontSize: '40px',
 			  fill: '#fff',
 			  backgroundColor: '#000',
@@ -35,7 +35,15 @@ class PauseScene extends Phaser.Scene {
 			}
 			).setOrigin(0.5)
 
-		this.add.text(width*0.5, height*0.85, "Press 'D' to download this level",
+		this.add.text(width*0.5, height*0.75, "Press 'D' to download this level",
+			{ fontSize: '40px',
+			  fill: '#fff',
+			  backgroundColor: '#000',
+			  fontFamily: 'Courier',
+			}
+			).setOrigin(0.5)
+
+		this.add.text(width*0.5, height*0.85, "Press 'O' to generate a random level",
 			{ fontSize: '40px',
 			  fill: '#fff',
 			  backgroundColor: '#000',
@@ -61,6 +69,7 @@ class PauseScene extends Phaser.Scene {
 		this.restartButton = this.input.keyboard.addKey('R');
 		this.loadButton = this.input.keyboard.addKey('L');
 		this.downloadButton = this.input.keyboard.addKey('D');
+		this.randomLevelButton = this.input.keyboard.addKey('O');
 	}
 	
 	update ()
@@ -96,6 +105,13 @@ class PauseScene extends Phaser.Scene {
 				},
 				loop: false
 			});
+		}
+		if (this.randomLevelButton.isDown)
+		{
+			this.scene.stop("SceneMain");
+			this.scene.stop();
+			this.scene.start("SceneMain", {createMode: "random_level"});
+			return;
 		}
 	}
 }

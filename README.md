@@ -5,6 +5,8 @@ The player controls the green alien with arrows on the keyboard and has three ex
 
 Additionally controls: 'P' to pause and 'R' to restart the game after losing or winning.
 
+In the pause menu you can press 'O' to generate a random level and play it.
+
 You can save the map you're playing on in pause menu. There is "sample_level.json" on the repo, from which the game loads a level under 'L' in the pause menu, unfortunately the loading action does not yet workon the github site and has been disabled.
 
 The game can be played at this link: https://apusteln.github.io/

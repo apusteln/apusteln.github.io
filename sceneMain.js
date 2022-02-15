@@ -36,8 +36,8 @@ class SceneMain extends Phaser.Scene {
 		this.worldSizeX = 2000;
 		this.worldSizeY = 600;
 		this.physics.world.setBounds(0, 0, this.worldSizeX, this.worldSizeY);
-		this.physics.world.checkCollision.up = false
-		this.physics.world.checkCollision.down = false
+		this.physics.world.checkCollision.up = false;
+		this.physics.world.checkCollision.down = false;
 		this.player;
 		this.cursors;
 		this.score = 0;
@@ -61,12 +61,30 @@ class SceneMain extends Phaser.Scene {
 		}
 		else if (data.createMode == "random_level")
 		{
-			console.log("IMPLEMENT");
+			this.generateRandomLevel();
 		}
 		else if (data.createMode == "load_level"             )
 		{
 			console.log(document.getElementById("json_level"))
 			this.loadLevelFromJson(JSON.parse(document.getElementById("json_level").contentWindow.document.body.childNodes[0].innerHTML));
+		}
+		
+		this.saved_coins = [];
+		for (var i=0; i<this.coins.children.entries.length; i++)
+		{
+			this.saved_coins.push( {x: this.coins.children.entries[i].x,
+									y: this.coins.children.entries[i].y,
+									originX: this.coins.children.entries[i].originX,
+									originY: this.coins.children.entries[i].originY})
+		}
+		
+		this.saved_enemies = [];
+		for (var i=0; i<this.enemies.children.entries.length; i++)
+		{
+			this.saved_enemies.push({x: this.enemies.children.entries[i].x,
+									 y: this.enemies.children.entries[i].y,
+									 originX: this.enemies.children.entries[i].originX,
+									 originY: this.enemies.children.entries[i].originY})
 		}
 		
 		for (var i=0; i<this.enemies.children.entries.length; i++)
@@ -196,7 +214,7 @@ class SceneMain extends Phaser.Scene {
 	{
 		if (this.cursors.up.isDown && this.player.body.touching.down && !this.player.ignoreImputs)
 		{
-			this.player.setVelocityY(-370);
+			this.player.setVelocityY(-470);
 			this.sound.play("jump_sound");
 		}
 	}
@@ -524,12 +542,12 @@ class SceneMain extends Phaser.Scene {
 		
 		obj.coins = {};
 		obj.coins.arr = [];
-		for (var i=0; i<this.coins.children.entries.length; i++)
+		for (var i=0; i<this.saved_coins.length; i++)
 		{
-			obj.coins.arr.push({x: this.coins.children.entries[i].x,
-			                    y: this.coins.children.entries[i].y,
-			                    originX: this.coins.children.entries[i].originX,
-			                    originY: this.coins.children.entries[i].originY})
+			obj.coins.arr.push({x: this.saved_coins[i].x,
+			                    y: this.saved_coins[i].y,
+			                    originX: this.saved_coins[i].originX,
+			                    originY: this.saved_coins[i].originY})
 		}
 		
 		obj.spikes = {};
@@ -555,12 +573,12 @@ class SceneMain extends Phaser.Scene {
 		
 		obj.enemies = {};
 		obj.enemies.arr = [];
-		for (var i=0; i<this.enemies.children.entries.length; i++)
+		for (var i=0; i<this.saved_enemies.length; i++)
 		{
-			obj.enemies.arr.push({x: this.enemies.children.entries[i].x,
-			                      y: this.enemies.children.entries[i].y,
-								  originX: this.enemies.children.entries[i].originX,
-		                          originY: this.enemies.children.entries[i].originY})
+			obj.enemies.arr.push({x: this.saved_enemies[i].x,
+			                      y: this.saved_enemies[i].y,
+								  originX: this.saved_enemies[i].originX,
+		                          originY: this.saved_enemies[i].originY})
 		}
 		
 		obj.grounds = {};
@@ -607,5 +625,231 @@ class SceneMain extends Phaser.Scene {
 		}
 		
 	}
+	
+	generateRandomLevel ()
+	{
+		var lenghtRemaining = this.worldSizeX;
+		
+		var middleGroundLength = 128;
+		var stopGroundLength = 86;
+		
+		var numOfHoles = Phaser.Math.Between(1, 3);
+		var holeMin;
+		var holeMax;
+		if (numOfHoles == 1)
+		{
+			holeMin = 500;
+			holeMax = 1500;
+		}
+		else if (numOfHoles == 2)
+		{
+			holeMin = 300;
+			holeMax = 500;
+		}
+		else
+		{
+			holeMin = 200;
+			holeMax = 300;
+		}
+			
+		var holes = [];
+		for (var i=0; i<numOfHoles; i++)
+		{
+			holes.push(Phaser.Math.Between(holeMin, holeMax));
+		}
+		
+		var lastBlockEnd = 0;
+	
+		this.grounds.create(0, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		this.grounds.create(middleGroundLength, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		lenghtRemaining -= 2*middleGroundLength;
+		lastBlockEnd += 2*middleGroundLength;
+		
+		for (var i=0; i<holes.length; i++)
+		{
+			lenghtRemaining -= holes[i];
+		}
+		
+		for (var i=0; i<numOfHoles; i++)
+		{
+			this.grounds.create(lastBlockEnd, 600, 'ground_stop').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+			lenghtRemaining -= stopGroundLength;
+			lastBlockEnd += stopGroundLength;
+			
+			console.log("lenghtRemaining after removing stop_block: " + String(lenghtRemaining))
+			
+			lastBlockEnd += holes[i];
 
+			this.grounds.create(lastBlockEnd, 600, 'ground_start').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+			lastBlockEnd += stopGroundLength;
+			lenghtRemaining -= stopGroundLength;
+			
+			var availableBlocks = Phaser.Math.FloorTo((lenghtRemaining)/middleGroundLength);
+			
+			var makeThisMuchMiddleBlocks = Phaser.Math.Between(1, availableBlocks);
+			
+			for (var j=0; j<makeThisMuchMiddleBlocks; j++)
+			{
+				this.grounds.create(lastBlockEnd, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+				lenghtRemaining -= middleGroundLength;
+				lastBlockEnd += middleGroundLength;
+			}
+			
+		}
+		
+		if (makeThisMuchMiddleBlocks == 0)
+		{ // ended at a hole, add blocks manually
+			this.grounds.create(this.worldSizeX-150, 600, 'ground_start').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+			this.grounds.create(this.worldSizeX-150 + stopGroundLength, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+		}	
+		
+		// Just add 20 blocks at the end to be sure
+		for (var i=0; i<5; i++)
+		{
+			this.grounds.create(lastBlockEnd, 600, 'ground_middle').setScale(0.5).setOrigin(0, 0.5).refreshBody();
+			lenghtRemaining -= middleGroundLength;
+			lastBlockEnd += middleGroundLength;
+		}
+		
+		// Generate random platforms
+		function giveRandomPlatformSize()
+		{
+			var n = Phaser.Math.Between(1, 10);
+			if (n <= 2)
+			{
+				return "platform_100";
+			}
+			else if (n > 2 && n <= 8)
+			{
+				return "platform_200";
+			}
+			else if (n > 8)
+			{
+				return "platform_400";
+			}
+		}
+
+		var currentLeftPlatfromSide = 100;
+		var currentPlatformTop;
+		var tempLeftSide;
+		
+		do
+		{
+			tempLeftSide = currentLeftPlatfromSide + Phaser.Math.Between(120, 450);
+			currentPlatformTop = Phaser.Math.Between(350, 530);
+			if (this.platforms.children.entries.length > 0)
+			{
+				currentPlatformTop = Phaser.Math.Between(100, 515);
+				while (this.platforms.children.entries[this.platforms.children.entries.length-1].body.right + 200 < tempLeftSide ||
+						this.platforms.children.entries[this.platforms.children.entries.length-1].body.right - 350 > tempLeftSide)
+				{
+					tempLeftSide = currentLeftPlatfromSide + Phaser.Math.Between(120, 450);
+					//debugger;
+				}
+				while ((this.platforms.children.entries[this.platforms.children.entries.length-1].body.bottom+80 - currentPlatformTop > 0) &&
+						(this.platforms.children.entries[this.platforms.children.entries.length-1].body.top-80 - (currentPlatformTop+32) < 0))
+				{
+					currentPlatformTop = Phaser.Math.Between(100, 515);
+					//debugger;
+				}
+			}
+			currentLeftPlatfromSide = tempLeftSide;
+			
+			this.platforms.create(currentLeftPlatfromSide, currentPlatformTop, giveRandomPlatformSize()).setOrigin(0, 0).refreshBody();
+		}
+		while (this.platforms.children.entries[this.platforms.children.entries.length-1].body.right < this.worldSizeX-200);
+		
+		for (var i=0; i<this.platforms.children.entries.length; i++)
+		{
+			var platformXMiddle = Phaser.Math.FloorTo((this.platforms.children.entries[i].body.left + this.platforms.children.entries[i].body.right)/2);
+			//console.log(this.platforms.children.entries[i].texture.key);
+			
+			if (this.platforms.children.entries[i].texture.key.endsWith("100"))
+			{
+				if (Phaser.Math.Between(1, 10) <= 3)
+				{
+					this.coins.create(platformXMiddle, this.platforms.children.entries[i].body.top - 55, "coins");
+				}
+				
+				var n = Phaser.Math.Between(1, 10);
+				if (n == 1)
+				{
+					this.enemies.create(platformXMiddle, this.platforms.children.entries[i].body.top - 50, "enemy");
+				}
+				else if (n > 1 && n < 5)
+				{
+					this.spikes.create(platformXMiddle, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+				}
+			}
+			else if (this.platforms.children.entries[i].texture.key.endsWith("200"))
+			{
+				var n = Phaser.Math.Between(1, 10);
+				if (n <= 3)
+				{
+					this.coins.create(platformXMiddle, this.platforms.children.entries[i].body.top - 55, "coins");
+				}
+				else if (n > 3 && n <= 5)
+				{
+					this.coins.create(platformXMiddle-50, this.platforms.children.entries[i].body.top - 55, "coins");
+					this.coins.create(platformXMiddle+50, this.platforms.children.entries[i].body.top - 55, "coins");
+				}
+				
+				var n = Phaser.Math.Between(1, 100);
+				if (n > 5 && n <= 15)
+				{
+					this.spikes.create(platformXMiddle-65, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+					this.spikes.create(platformXMiddle+65, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+				}
+				else if (n > 15 && n <= 35)
+				{
+					this.spikes.create(platformXMiddle, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+				}
+				else if (n > 35 && n <= 65)
+				{
+					this.enemies.create(platformXMiddle, this.platforms.children.entries[i].body.top - 50, "enemy");
+				}
+			}
+			else if (this.platforms.children.entries[i].texture.key.endsWith("400"))
+			{
+				var n = Phaser.Math.Between(1, 100);
+				if (n <= 5)
+				{
+					this.coins.create(platformXMiddle-130, this.platforms.children.entries[i].body.top - 55, "coins");
+					this.coins.create(platformXMiddle-65, this.platforms.children.entries[i].body.top - 55, "coins");
+					this.coins.create(platformXMiddle+65, this.platforms.children.entries[i].body.top - 55, "coins");
+					this.coins.create(platformXMiddle+130, this.platforms.children.entries[i].body.top - 55, "coins");
+				}
+				else if (n > 5 && n <= 25)
+				{
+					this.coins.create(platformXMiddle-70, this.platforms.children.entries[i].body.top - 55, "coins");
+					this.coins.create(platformXMiddle+70, this.platforms.children.entries[i].body.top - 55, "coins");
+				}
+				else if (n > 25 && n <= 55)
+				{
+					this.coins.create(platformXMiddle, this.platforms.children.entries[i].body.top - 55, "coins");
+				}
+				
+				var n = Phaser.Math.Between(1, 100);
+				if (n <= 5)
+				{
+					this.spikes.create(platformXMiddle-100, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+					this.spikes.create(platformXMiddle, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+					this.spikes.create(platformXMiddle+100, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+				}
+				else if (n > 5 && n <= 15)
+				{
+					this.spikes.create(platformXMiddle-120, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+					this.spikes.create(platformXMiddle+120, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+				}
+				else if (n > 15 && n <= 45)
+				{
+					this.spikes.create(platformXMiddle, this.platforms.children.entries[i].body.top, "spikes").setScale(0.3).setOrigin(0.5, 1).refreshBody();
+				}
+				else if (n > 45 && n <= 85)
+				{
+					this.enemies.create(platformXMiddle, this.platforms.children.entries[i].body.top - 50, "enemy");
+				}
+			}
+		}
+	}
 }
