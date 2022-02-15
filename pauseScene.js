@@ -51,7 +51,7 @@ class PauseScene extends Phaser.Scene {
 			}
 			).setOrigin(0.5)
 			
-		if (        true  );
+		if (jsonFileForLevel !== null);
 		{
 			console.log("creator pauzy")
 			console.log(localStorage.getItem('jsonFileForLevel'))
@@ -87,7 +87,7 @@ class PauseScene extends Phaser.Scene {
 			this.scene.start("SceneMain", {createMode: "first_level"});
 			return;
 		}
-		if (this.loadButton.isDown     )
+		if (this.loadButton.isDown && jsonFileForLevel !== null)
 		{
 			this.scene.stop("SceneMain");
 			this.scene.stop();

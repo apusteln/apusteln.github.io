@@ -63,10 +63,10 @@ class SceneMain extends Phaser.Scene {
 		{
 			this.generateRandomLevel();
 		}
-		else if (data.createMode == "load_level"             )
+		else if (data.createMode == "load_level" && jsonFileForLevel !== null)
 		{
 			console.log(document.getElementById("json_level"))
-			this.loadLevelFromJson(JSON.parse(document.getElementById("json_level").contentWindow.document.body.childNodes[0].innerHTML));
+			this.loadLevelFromJson(jsonFileForLevel);
 		}
 		
 		this.saved_coins = [];

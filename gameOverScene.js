@@ -26,9 +26,9 @@ class GameOverScene extends Phaser.Scene {
 			}
 			).setOrigin(0.5)
 		
-		if (     true     )
+		if (jsonFileForLevel !== null)
 		{
-			this.add.text(width*0.5, height*0.75, "Press 'L' to load a level from json",
+			this.add.text(width*0.5, height*0.85, "Press 'L' to load a level from json",
 			{ fontSize: '40px',
 			  fill: '#fff',
 			  backgroundColor: '#000',
@@ -37,7 +37,7 @@ class GameOverScene extends Phaser.Scene {
 			).setOrigin(0.5)
 		}
 
-		this.add.text(width*0.5, height*0.85, "Press 'O' to generate a random level",
+		this.add.text(width*0.5, height*0.75, "Press 'O' to generate a random level",
 			{ fontSize: '40px',
 			  fill: '#fff',
 			  backgroundColor: '#000',
@@ -60,7 +60,7 @@ class GameOverScene extends Phaser.Scene {
 			this.scene.stop();
 			return;
 		}
-		if (this.loadButton.isDown                )
+		if (this.loadButton.isDown && jsonFileForLevel !== null)
 		{
 			this.scene.stop("SceneMain");
 			this.scene.stop();
